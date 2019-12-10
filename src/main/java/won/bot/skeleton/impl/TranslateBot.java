@@ -10,27 +10,26 @@ import won.bot.framework.eventbot.bus.EventBus;
 import won.bot.framework.eventbot.event.Event;
 import won.bot.framework.eventbot.event.impl.command.connect.ConnectCommandEvent;
 import won.bot.framework.eventbot.event.impl.command.connect.ConnectCommandResultEvent;
-import won.bot.framework.eventbot.event.impl.wonmessage.CloseFromOtherAtomEvent;
+import won.bot.framework.eventbot.event.impl.command.connect.ConnectCommandSuccessEvent;
 import won.bot.framework.eventbot.event.impl.wonmessage.ConnectFromOtherAtomEvent;
+import won.bot.framework.eventbot.event.impl.wonmessage.MessageFromOtherAtomEvent;
 import won.bot.framework.eventbot.filter.impl.AtomUriInNamedListFilter;
 import won.bot.framework.eventbot.filter.impl.CommandResultFilter;
 import won.bot.framework.eventbot.filter.impl.NotFilter;
 import won.bot.framework.eventbot.listener.EventListener;
+import won.bot.framework.eventbot.listener.impl.ActionOnEventListener;
 import won.bot.framework.eventbot.listener.impl.ActionOnFirstEventListener;
-import won.bot.framework.extensions.serviceatom.ServiceAtomBehaviour;
-import won.bot.framework.extensions.serviceatom.ServiceAtomExtension;
-import won.bot.skeleton.action.MatcherExtensionAtomCreatedAction;
-import won.bot.skeleton.context.SkeletonBotContextWrapper;
-
-
 import won.bot.framework.extensions.matcher.MatcherBehaviour;
 import won.bot.framework.extensions.matcher.MatcherExtension;
-import won.bot.framework.extensions.matcher.MatcherExtensionAtomCreatedEvent;
+import won.bot.framework.extensions.serviceatom.ServiceAtomBehaviour;
+import won.bot.framework.extensions.serviceatom.ServiceAtomExtension;
+import won.bot.skeleton.action.ReplyAction;
+import won.bot.skeleton.api.TranslatorAPI;
+import won.bot.skeleton.context.SkeletonBotContextWrapper;
 
 import java.lang.invoke.MethodHandles;
-import java.net.URI;
 
-public class SkeletonBot extends EventBot implements MatcherExtension, ServiceAtomExtension {
+public class TranslateBot extends EventBot implements MatcherExtension, ServiceAtomExtension {
     private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
     private int registrationMatcherRetryInterval;
@@ -83,6 +82,11 @@ public class SkeletonBot extends EventBot implements MatcherExtension, ServiceAt
         // filter to prevent reacting to serviceAtom<->ownedAtom events;
         NotFilter noInternalServiceAtomEventFilter = getNoInternalServiceAtomEventFilter();
 
+
+
+        bus.subscribe(MessageFromOtherAtomEvent.class,
+                new ActionOnEventListener(ctx, "ReceivedTextMessage", new ReplyAction(ctx)));
+
         bus.subscribe(ConnectFromOtherAtomEvent.class, noInternalServiceAtomEventFilter, new BaseEventBotAction(ctx) {
             @Override
             protected void doRun(Event event, EventListener executingListener) {
@@ -90,9 +94,10 @@ public class SkeletonBot extends EventBot implements MatcherExtension, ServiceAt
 
                 ConnectFromOtherAtomEvent connectFromOtherAtomEvent = (ConnectFromOtherAtomEvent) event;
                 try {
-                    String message = "Hello i am the BotSkeletor i will send you a message everytime an atom is created...";
-                    final ConnectCommandEvent connectCommandEvent = new ConnectCommandEvent(connectFromOtherAtomEvent.getRecipientSocket(), connectFromOtherAtomEvent.getSenderSocket(), message);
-                    ctx.getEventBus().subscribe(ConnectCommandEvent.class, new ActionOnFirstEventListener(ctx,
+                    String receivedConnectMessage = ReplyAction.extractTextMessageFromWonMessage(((ConnectFromOtherAtomEvent) event).getWonMessage());
+
+                    final ConnectCommandEvent connectCommandEvent = new ConnectCommandEvent(connectFromOtherAtomEvent.getRecipientSocket(), connectFromOtherAtomEvent.getSenderSocket(), TranslatorAPI.handleRequest(receivedConnectMessage));
+                    ctx.getEventBus().subscribe(ConnectCommandSuccessEvent.class, new ActionOnFirstEventListener(ctx,
                                                                                                           new CommandResultFilter(connectCommandEvent), new BaseEventBotAction(ctx) {
                         @Override
                         protected void doRun(Event event, EventListener executingListener) {
@@ -113,22 +118,6 @@ public class SkeletonBot extends EventBot implements MatcherExtension, ServiceAt
                 } catch (Exception te) {
                     logger.error(te.getMessage(), te);
                 }
-            }
-        });
-
-        // listen for the MatcherExtensionAtomCreatedEvent
-        bus.subscribe(MatcherExtensionAtomCreatedEvent.class, new MatcherExtensionAtomCreatedAction(ctx));
-
-        bus.subscribe(CloseFromOtherAtomEvent.class, new BaseEventBotAction(ctx) {
-            @Override
-            protected void doRun(Event event, EventListener executingListener) {
-                EventListenerContext ctx = getEventListenerContext();
-
-                CloseFromOtherAtomEvent closeFromOtherAtomEvent = (CloseFromOtherAtomEvent) event;
-                URI targetSocketUri = closeFromOtherAtomEvent.getSocketURI();
-                URI senderSocketUri = closeFromOtherAtomEvent.getTargetSocketURI();
-                logger.info("Remove a closed connection " + senderSocketUri + " -> " + targetSocketUri + " from the botcontext ");
-                botContextWrapper.removeConnectedSocket(senderSocketUri, targetSocketUri);
             }
         });
     }
