@@ -1,0 +1,49 @@
+<!--
+  ~ Copyright 2012  Research Studios Austria Forschungsges.m.b.H.
+  ~
+  ~    Licensed under the Apache License, Version 2.0 (the "License");
+  ~    you may not use this file except in compliance with the License.
+  ~    You may obtain a copy of the License at
+  ~
+  ~        http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~    Unless required by applicable law or agreed to in writing, software
+  ~    distributed under the License is distributed on an "AS IS" BASIS,
+  ~    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~    See the License for the specific language governing permissions and
+  ~    limitations under the License.
+  -->
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd">
+    <bean id="echoBot" class="won.bot.skeleton.impl.SkeletonBot">
+        <property name="taskScheduler" ref="taskScheduler"/>
+        <property name="botContextWrapper" ref="botContextWrapper"/>
+        <property name="atomProducer">
+            <!-- since this bot does not create any atoms from other source, e.g rdf-files, mails etc, adding the NopAtomProducer will suffice, as it is never used -->
+            <bean class="won.bot.framework.component.atomproducer.impl.NopAtomProducer"/>
+        </property>
+
+        <!--property name="nodeURISource" ref="nodeUriSourceRandom" /-->
+        <property name="matcherNodeURISource" ref="matcherNodeURISource"/>
+        <property name="matcherProtocolAtomServiceClient" ref="matcherProtocolAtomServiceClient"/>
+        <property name="matcherProtocolMatcherService" ref="matcherProtocolMatcherServiceJMSBased"/>
+        <property name="registrationMatcherRetryInterval" value="5000"/>
+
+        <property name="trigger">
+            <bean class="org.springframework.scheduling.support.PeriodicTrigger">
+                <constructor-arg name="period" value="2000"/>
+                <constructor-arg name="timeUnit" value="MILLISECONDS"/>
+                <property name="initialDelay" value="10000"/> <!-- wait 10s at the beginning -->
+                <property name="fixedRate" value="false"/>  <!-- fixed delay after completion -->
+            </bean>
+        </property>
+    </bean>
+
+    <bean id="botContextWrapper" class="won.bot.skeleton.context.SkeletonBotContextWrapper">
+        <constructor-arg name="botContext" ref="${botContext.impl}"/>
+        <constructor-arg name="botName" value="${bot.name}"/>
+    </bean>
+</beans>
