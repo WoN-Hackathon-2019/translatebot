@@ -39,6 +39,7 @@ public class TranslatorAPI {
 
             return Optional.of(countryCode);
         } catch (Exception e) {
+            e.printStackTrace();
             return Optional.empty();
         }
     }
@@ -51,6 +52,7 @@ public class TranslatorAPI {
             List<HashMap<String, String>> languages = (List<HashMap<String, String>>) countryModel.get("languages");
             return Optional.of(languages.get(0).get("iso639_1"));
         } catch (Exception e) {
+            e.printStackTrace();
             return Optional.empty();
         }
     }
@@ -71,6 +73,7 @@ public class TranslatorAPI {
             return Optional.of(translatedText);
 
         } catch (Exception e) {
+            e.printStackTrace();
             return Optional.empty();
         }
     }
@@ -106,7 +109,7 @@ public class TranslatorAPI {
 
             if (!translation.isPresent()) {
                 responseDTO.status = "error";
-                responseDTO.message = "error with external api";
+                responseDTO.message = "error with external api; are all keys set? are all servers online?";
             } else {
                 responseDTO.status = "success";
                 responseDTO.message = translation.get();
@@ -115,7 +118,7 @@ public class TranslatorAPI {
         } catch (Exception e) {
 
             responseDTO.status = "error";
-            responseDTO.message = "request is in invalid format";
+            responseDTO.message = "request is in invalid format, valid format would be: {\"sourceLat\":\"48.2082\",\"sourceLon\":\"16.3738\",\"targetLat\":\"40.7487727\",\"targetLon\":\"-73.9849336\",\"text\":\"ich sitze im baumhaus\"}";
 
         }
 
