@@ -18,7 +18,7 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
         http://www.springframework.org/schema/beans/spring-beans.xsd">
-    <bean id="echoBot" class="won.bot.skeleton.impl.TranslateBot">
+    <bean id="echoBot" class="won.bot.translate.impl.TranslateBot">
         <property name="taskScheduler" ref="taskScheduler"/>
         <property name="botContextWrapper" ref="botContextWrapper"/>
         <property name="atomProducer">
@@ -42,7 +42,7 @@
         </property>
     </bean>
 
-    <bean id="botContextWrapper" class="won.bot.skeleton.context.SkeletonBotContextWrapper">
+    <bean id="botContextWrapper" class="won.bot.translate.context.TranslateBotContextWrapper">
         <constructor-arg name="botContext" ref="${botContext.impl}"/>
         <constructor-arg name="botName" value="${bot.name}"/>
     </bean>

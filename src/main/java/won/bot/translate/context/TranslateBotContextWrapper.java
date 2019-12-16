@@ -1,4 +1,4 @@
-package won.bot.skeleton.context;
+package won.bot.translate.context;
 
 import won.bot.framework.bot.context.BotContext;
 import won.bot.framework.extensions.serviceatom.ServiceAtomEnabledBotContextWrapper;
@@ -6,10 +6,10 @@ import won.bot.framework.extensions.serviceatom.ServiceAtomEnabledBotContextWrap
 import java.net.URI;
 import java.util.*;
 
-public class SkeletonBotContextWrapper extends ServiceAtomEnabledBotContextWrapper {
+public class TranslateBotContextWrapper extends ServiceAtomEnabledBotContextWrapper {
     private final String connectedSocketsMap;
 
-    public SkeletonBotContextWrapper(BotContext botContext, String botName) {
+    public TranslateBotContextWrapper(BotContext botContext, String botName) {
         super(botContext, botName);
         this.connectedSocketsMap = botName + ":connectedSocketsMap";
     }

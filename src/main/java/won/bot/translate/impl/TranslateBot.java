@@ -1,4 +1,4 @@
-package won.bot.skeleton.impl;
+package won.bot.translate.impl;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,9 +23,9 @@ import won.bot.framework.extensions.matcher.MatcherBehaviour;
 import won.bot.framework.extensions.matcher.MatcherExtension;
 import won.bot.framework.extensions.serviceatom.ServiceAtomBehaviour;
 import won.bot.framework.extensions.serviceatom.ServiceAtomExtension;
-import won.bot.skeleton.action.ReplyAction;
-import won.bot.skeleton.api.TranslatorAPI;
-import won.bot.skeleton.context.SkeletonBotContextWrapper;
+import won.bot.translate.action.ReplyAction;
+import won.bot.translate.api.TranslatorAPI;
+import won.bot.translate.context.TranslateBotContextWrapper;
 
 import java.lang.invoke.MethodHandles;
 
@@ -55,12 +55,12 @@ public class TranslateBot extends EventBot implements MatcherExtension, ServiceA
     protected void initializeEventListeners() {
         EventListenerContext ctx = getEventListenerContext();
 
-        if (!(getBotContextWrapper() instanceof SkeletonBotContextWrapper)) {
-            logger.error(getBotContextWrapper().getBotName() + " does not work without a SkeletonBotContextWrapper");
-            throw new IllegalStateException(getBotContextWrapper().getBotName() + " does not work without a SkeletonBotContextWrapper");
+        if (!(getBotContextWrapper() instanceof TranslateBotContextWrapper)) {
+            logger.error(getBotContextWrapper().getBotName() + " does not work without a TranslateBotContextWrapper");
+            throw new IllegalStateException(getBotContextWrapper().getBotName() + " does not work without a TranslateBotContextWrapper");
         }
         EventBus bus = getEventBus();
-        SkeletonBotContextWrapper botContextWrapper = (SkeletonBotContextWrapper) getBotContextWrapper();
+        TranslateBotContextWrapper botContextWrapper = (TranslateBotContextWrapper) getBotContextWrapper();
 
         // register listeners for event.impl.command events used to tell the bot to send
         // messages
@@ -74,7 +74,7 @@ public class TranslateBot extends EventBot implements MatcherExtension, ServiceA
         // set up matching extension
         // as this is an extension, it can be activated and deactivated as needed
         // if activated, a MatcherExtensionAtomCreatedEvent is sent every time a new atom is created on a monitored node
-        matcherBehaviour = new MatcherBehaviour(ctx, "BotSkeletonMatchingExtension", registrationMatcherRetryInterval);
+        matcherBehaviour = new MatcherBehaviour(ctx, "TranslateBotMatchingExtension", registrationMatcherRetryInterval);
         matcherBehaviour.activate();
 
         // create filters to determine which atoms the bot should react to

@@ -1,4 +1,4 @@
-package won.bot.skeleton;
+package won.bot.translate;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.SpringBootConfiguration;

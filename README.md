@@ -1,9 +1,15 @@
-# Web of Needs Bot Skeleton
+# Web of Needs: TranslateBot
 
-This skeleton contains a bot that creates a Service Atom that one can connect to. 
-For each atom that has been created on the configured node(s), the bot sends a message with the atomUri of the created Atom to everyone that is connected to the Service Atom.
+This bot takes a specific JSON-Format as input (see example below) and returns a JSON of the translated message and a status code.
 
-The Bot Skeleton is a [Spring Boot Application](https://docs.spring.io/spring-boot/docs/current/reference/html/using-boot-running-your-application.html).
+```
+{"sourceLat":"48.2082","sourceLon":"16.3738","targetLat":"40.7487727","targetLon":"-73.9849336","text":"ich sitze im baumhaus"}
+```
+
+Lat stands for Latitude,
+Lon stands for Longitude.
+
+The Bot is a [Spring Boot Application](https://docs.spring.io/spring-boot/docs/current/reference/html/using-boot-running-your-application.html).
 
 ## Running the bot
 
@@ -15,7 +21,7 @@ The Bot Skeleton is a [Spring Boot Application](https://docs.spring.io/spring-bo
 ### On the command line
 
 ```
-cd bot-skeleton
+cd translatebot
 export WON_NODE_URI="https://hackathonnode.matchat.org/won"
 mvn clean package
 java -jar target/bot.jar
@@ -23,7 +29,7 @@ java -jar target/bot.jar
 Now go to [What's new](https://hackathon.matchat.org/owner/#!/overview) to find your bot, connect and [create an atom](https://hackathon.matchat.org/owner/#!/create) to see the bot in action.
 
 ### In Intellij Idea
-1. Create a run configuration for the class `won.bot.skeleton.SkeletonBotApp`
+1. Create a run configuration for the class `won.bot.translate.TranslateBotApp`
 2. Add the environment variables
 
   * `WON_NODE_URI` pointing to your node uri (e.g. `https://hackathonnode.matchat.org/won` without quotes)
@@ -39,7 +45,7 @@ If you get a message indicating your keysize is restricted on startup (`JCE unli
 
 ## Start coding
 
-Once the skeleton bot is running, you can use it as a base for implementing your own application. 
+Once the bot is running, you can use it as a base for implementing your own application. 
 
 ## Setting up
 - Download or clone this repository

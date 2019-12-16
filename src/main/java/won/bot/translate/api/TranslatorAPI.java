@@ -1,4 +1,4 @@
-package won.bot.skeleton.api;
+package won.bot.translate.api;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;

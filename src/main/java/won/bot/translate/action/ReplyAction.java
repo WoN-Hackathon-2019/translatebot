@@ -1,4 +1,4 @@
-package won.bot.skeleton.action;
+package won.bot.translate.action;
 
 
 import org.slf4j.Logger;
@@ -9,8 +9,8 @@ import won.bot.framework.eventbot.event.Event;
 import won.bot.framework.eventbot.event.impl.command.connectionmessage.ConnectionMessageCommandEvent;
 import won.bot.framework.eventbot.event.impl.wonmessage.MessageFromOtherAtomEvent;
 import won.bot.framework.eventbot.listener.EventListener;
-import won.bot.skeleton.api.TranslatorAPI;
-import won.bot.skeleton.context.SkeletonBotContextWrapper;
+import won.bot.translate.api.TranslatorAPI;
+import won.bot.translate.context.TranslateBotContextWrapper;
 import won.protocol.message.WonMessage;
 import won.protocol.model.Connection;
 import won.protocol.util.WonRdfUtils;
@@ -39,8 +39,8 @@ public class ReplyAction extends BaseEventBotAction {
         logger.info("MessageEvent received");
         EventListenerContext ctx = getEventListenerContext();
         if (event instanceof MessageFromOtherAtomEvent
-                && ctx.getBotContextWrapper() instanceof SkeletonBotContextWrapper) {
-            SkeletonBotContextWrapper botContextWrapper = (SkeletonBotContextWrapper) ctx.getBotContextWrapper();
+                && ctx.getBotContextWrapper() instanceof TranslateBotContextWrapper) {
+            TranslateBotContextWrapper botContextWrapper = (TranslateBotContextWrapper) ctx.getBotContextWrapper();
             Connection con = ((MessageFromOtherAtomEvent) event).getCon();
             URI yourAtomUri = con.getAtomURI();
 
