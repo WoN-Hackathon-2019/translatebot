@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>TranslateBot</title>
+    <script src="jquery.min.js"></script>
+    <script src="three.min.js"></script>
+    <script src="gio.min.js"></script>
+
+    <style>
+        #globalArea {
+            height: 100%;
+            width: 100%;
+            margin: 0;
+            padding: 0;
+        }
+        
+        header {
+            padding-top: 20px;
+            font-size: 50px;
+            font-family: monospace;
+        }
+        
+        html,
+        body {
+            height: 100%;
+            width: 100%;
+            margin: 0;
+            padding: 0;
+        }
+        
+        header {
+            position: absolute;
+            width: 100%;
+            height: 40px;
+            line-height: 40px;
+            text-align: center;
+            color: white;
+            z-index: 1000;
+        }
+    </style>
+
+</head>
+
+<body>
+    <header>TranslateGlobe</header>
+
+    <div id="globalArea"></div>
+    <script>
+        var container = document.getElementById("globalArea");
+        var controller = new GIO.Controller(container);
+
+        var configs = {
+            color: {
+                surface: 0xFFFFFF,
+                in : 0x154492,
+                out: 0xDD380C,
+                halo: 0xFFFFFF,
+            },
+            control: {
+                initCountry: "AT",
+                halo: true
+            }
+        };
+
+        controller.configure(configs);
+        controller.init();
+
+        var oldData = null;
+
+        function getData() {
+            $.getJSON('https://kvdb.io/BiZY1ywdaJTUsLNWnY5oty/log', function(result) {
+                if (JSON.stringify(oldData) != JSON.stringify(result)) {
+                    oldData = result;
+                    controller.switchCountry(result.sourceCountry);
+
+                    controller.addData([{
+                        "e": result.sourceCountry,
+                        "i": result.targetCountry,
+                        "v": 100000,
+                        "inColor": "ffffff",
+                        "outColor": "#ffffff"
+                    }]);
+                }
+            });
+        }
+        $(document).ready(function() {
+            setInterval(getData, 2000);
+            getData();
+        });
+    </script>
+</body>
+
+</html>

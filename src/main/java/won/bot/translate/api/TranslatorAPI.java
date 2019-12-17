@@ -14,16 +14,42 @@ public class TranslatorAPI {
 
     static String locationiqKey = "XXX";
     static String deeplKey = "XXX";
+    static String bucketID = "BiZY1ywdaJTUsLNWnY5oty";
 
-    static Optional<String> languageForGPS(String lat, String lon) {
+    static boolean setBucketContent(String varName, String content) {
+        String url = String.format("https://kvdb.io/%s/%s", bucketID, varName);
 
-        Optional<String> countryCode = countyCodeOfGPS(lat, lon);
+        try {
+            RestTemplate restTemplate = new RestTemplate();
+            restTemplate.postForObject(url, content, String.class);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    public static boolean logRequest(RequestDTO requestDTO) {
+        try {
+            Gson gson = new Gson();
+            LogDTO logDTO = new LogDTO();
+            logDTO.sourceCountry = countyCodeOfGPS(requestDTO.sourceLat, requestDTO.sourceLon).get().toUpperCase();
+            logDTO.targetCountry = countyCodeOfGPS(requestDTO.targetLat, requestDTO.targetLon).get().toUpperCase();
+            setBucketContent("log", gson.toJson(logDTO));
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    static Optional < String > languageForGPS(String lat, String lon) {
+
+        Optional < String > countryCode = countyCodeOfGPS(lat, lon);
         if (!countryCode.isPresent()) return Optional.empty();
         return languageOfCountryCode(countryCode.get());
 
     }
 
-    static Optional<String> countyCodeOfGPS(String lat, String lon) {
+    static Optional < String > countyCodeOfGPS(String lat, String lon) {
 
         try {
 
@@ -44,12 +70,12 @@ public class TranslatorAPI {
         }
     }
 
-    static Optional<String> languageOfCountryCode(String countryCode) {
+    static Optional < String > languageOfCountryCode(String countryCode) {
         try {
             RestTemplate restTemplate = new RestTemplate();
             String countryURI = "https://restcountries.eu/rest/v2/alpha/" + countryCode;
             JSONObject countryModel = restTemplate.getForObject(countryURI, JSONObject.class);
-            List<HashMap<String, String>> languages = (List<HashMap<String, String>>) countryModel.get("languages");
+            List < HashMap < String, String >> languages = (List < HashMap < String, String >> ) countryModel.get("languages");
             return Optional.of(languages.get(0).get("iso639_1"));
         } catch (Exception e) {
             e.printStackTrace();
@@ -57,7 +83,7 @@ public class TranslatorAPI {
         }
     }
 
-    static Optional<String> translate(String sourceLanguage, String targetLanguage, String text) {
+    static Optional < String > translate(String sourceLanguage, String targetLanguage, String text) {
 
         try {
             RestTemplate restTemplate = new RestTemplate();
@@ -78,9 +104,9 @@ public class TranslatorAPI {
         }
     }
 
-    public static Optional<String> translateWithGps(String sourceLat, String sourceLon, String targetLat, String targetLon, String text) {
-        Optional<String> sourceLanguage = languageForGPS(sourceLat, sourceLon);
-        Optional<String> targetLanguage = languageForGPS(targetLat, targetLon);
+    public static Optional < String > translateWithGps(String sourceLat, String sourceLon, String targetLat, String targetLon, String text) {
+        Optional < String > sourceLanguage = languageForGPS(sourceLat, sourceLon);
+        Optional < String > targetLanguage = languageForGPS(targetLat, targetLon);
 
         if (!sourceLanguage.isPresent() || !targetLanguage.isPresent()) return Optional.empty();
 
@@ -98,14 +124,19 @@ public class TranslatorAPI {
         String status;
     }
 
+    private static class LogDTO {
+        String sourceCountry, targetCountry;
+    }
+
     public static String handleRequest(String jsonInput) {
         Gson gson = new Gson();
         ResponseDTO responseDTO = new ResponseDTO();
 
         try {
             RequestDTO requestDTO = gson.fromJson(jsonInput, RequestDTO.class);
+            logRequest(requestDTO);
 
-            Optional<String> translation = translateWithGps(requestDTO.sourceLat, requestDTO.sourceLon, requestDTO.targetLat, requestDTO.targetLon, requestDTO.text);
+            Optional < String > translation = translateWithGps(requestDTO.sourceLat, requestDTO.sourceLon, requestDTO.targetLat, requestDTO.targetLon, requestDTO.text);
 
             if (!translation.isPresent()) {
                 responseDTO.status = "error";
