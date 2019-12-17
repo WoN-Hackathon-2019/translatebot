@@ -12,8 +12,8 @@ import java.util.Optional;
 
 public class TranslatorAPI {
 
-    static String locationiqKey = "XXX";
-    static String deeplKey = "XXX";
+    static String locationiqKey = "pk.473ec37c019e2789c2f7f5da11e4951f";
+    static String deeplKey = "1c5d9957-d7e9-9082-a1aa-37fb49659c3a";
     static String bucketID = "BiZY1ywdaJTUsLNWnY5oty";
 
     static boolean setBucketContent(String varName, String content) {
@@ -117,11 +117,13 @@ public class TranslatorAPI {
         String sourceLat, sourceLon;
         String targetLat, targetLon;
         String text;
+        String reqID;
     }
 
     private static class ResponseDTO {
         String message;
         String status;
+        String reqID;
     }
 
     private static class LogDTO {
@@ -134,6 +136,7 @@ public class TranslatorAPI {
 
         try {
             RequestDTO requestDTO = gson.fromJson(jsonInput, RequestDTO.class);
+            responseDTO.reqID = requestDTO.reqID;
             logRequest(requestDTO);
 
             Optional < String > translation = translateWithGps(requestDTO.sourceLat, requestDTO.sourceLon, requestDTO.targetLat, requestDTO.targetLon, requestDTO.text);
@@ -149,7 +152,7 @@ public class TranslatorAPI {
         } catch (Exception e) {
 
             responseDTO.status = "error";
-            responseDTO.message = "request is in invalid format, valid format would be: {\"sourceLat\":\"48.2082\",\"sourceLon\":\"16.3738\",\"targetLat\":\"40.7487727\",\"targetLon\":\"-73.9849336\",\"text\":\"ich sitze im baumhaus\"}";
+            responseDTO.message = "request is in invalid format, for the correct format see documentation in repository.";
 
         }
 
