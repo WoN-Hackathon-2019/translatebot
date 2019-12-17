@@ -5,6 +5,8 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import org.jose4j.json.internal.json_simple.JSONObject;
 import org.springframework.web.client.RestTemplate;
+import java.lang.Thread;
+
 
 import java.util.HashMap;
 import java.util.List;
@@ -52,7 +54,7 @@ public class TranslatorAPI {
     static Optional < String > countyCodeOfGPS(String lat, String lon) {
 
         try {
-
+            Thread.sleep(1500);
             String infoURI = String.format("https://eu1.locationiq.com/v1/reverse.php?key=%s&lat=%s&lon=%s&format=json", locationiqKey, lat, lon);
 
             System.out.println(infoURI);
