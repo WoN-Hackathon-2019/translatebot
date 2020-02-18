@@ -29,7 +29,7 @@
         <dependency>
             <groupId>at.researchstudio.sat</groupId>
             <artifactId>won-bot</artifactId>
-            <version>0.7</version>
+            <version>0.9</version>
         </dependency>
 
         <dependency>
